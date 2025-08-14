@@ -1,11 +1,11 @@
 variable "aws_region" {
-  description = "Region to deploy the resources"
+  description = "AWS region"
   type        = string
   default     = "us-east-1"
 }
 
 variable "bucket_prefix" {
-  description = "Prefix for the S3 bucket name"
+  description = "S3 bucket name"
   type        = string
   default     = "aws-access-logs"
 }
@@ -32,21 +32,20 @@ locals {
     "eu-west-2"      = "652711504416"
     "eu-central-1"   = "054676820928"
   }
-
-  unique_bucket_name = "${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}-${var.aws_region}"
 }
 
 provider "aws" {
   region = var.aws_region
 }
 
-data "aws_caller_identity" "current" {}
+resource "random_id" "bucket_suffix" {
+  byte_length = 8
+}
 
 resource "aws_s3_bucket" "access_logs" {
-  bucket = local.unique_bucket_name
+  bucket = "${var.bucket_prefix}-${var.aws_region}-${random_id.bucket_suffix.hex}"
 
   tags = {
-    Name              = local.unique_bucket_name
     prevent-recursion = "true"
   }
 }
