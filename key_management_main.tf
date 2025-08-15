@@ -40,10 +40,3 @@ resource "aws_kms_key" "service_keys" {
   }
 }
 
-output "kms_key_arns" {
-  value = { for svc, key in aws_kms_key.service_keys : svc => key.arn }
-}
-
-output "kms_key_ids" {
-  value = { for svc, key in aws_kms_key.service_keys : svc => key.key_id }
-}
